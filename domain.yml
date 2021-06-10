@@ -12,9 +12,8 @@ intents:
 - mood_unhappy
 - bot_challenge
 entities:
-- city
 - GPE
-
+- city
 slots:
   city:
     type: text

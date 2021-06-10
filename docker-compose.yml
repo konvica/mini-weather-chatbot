@@ -1,0 +1,33 @@
+version: "3.8"
+services:
+  rasa:
+    image: rasa/rasa:2.6.3-spacy-en
+    volumes:
+      - ./:/app #ugly, no need for all models, etc
+    command: ["run","--cors","*", "--enable-api"]
+    ports:
+    - 5005:5005
+    environment:
+      RASA_USER_APP: "http://rasa_action_server:5055"
+#  rasa_test:
+#    image: rasa/rasa:2.6.3-spacy-en
+#    volumes:
+#      - ./:/app
+#    command: ["test"]
+  rasa_action_server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    expose:
+      - 5055
+  webserver:
+    image: nginx:alpine
+    depends_on:
+      - rasa
+      - rasa_action_server
+    volumes:
+      - ./web:/usr/share/nginx/html
+    ports:
+    - 8880:80

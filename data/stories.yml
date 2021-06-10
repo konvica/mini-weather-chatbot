@@ -1,0 +1,126 @@
+version: "2.0"
+
+stories:
+
+- story: happy path
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: mood_great
+  - action: utter_happy
+
+- story: sad path 1
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: mood_unhappy
+  - action: utter_cheer_up
+  - action: utter_did_that_help
+  - intent: affirm
+  - action: utter_happy
+
+- story: sad path 2
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: mood_unhappy
+  - action: utter_cheer_up
+  - action: utter_did_that_help
+  - intent: deny
+  - action: utter_goodbye
+
+- story: weather
+  steps:
+    - intent: ask_weather
+    - slot_was_set:
+        - city: rotterdam
+    - action: action_ask_weather
+
+- story: interactive_story_1
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: ask_weather
+    entities:
+    - city: rotterdam
+  - slot_was_set:
+    - city: rotterdam
+  - action: action_ask_weather
+  - intent: ask_weather
+    entities:
+    - city: rotterdam
+  - slot_was_set:
+    - city: rotterdam
+  - action: action_ask_weather
+
+- story: interactive_story_1
+  steps:
+  - intent: ask_weather
+    entities:
+    - city: dubai
+  - slot_was_set:
+    - city: dubai
+  - action: action_ask_weather
+  - intent: ask_weather
+    entities:
+    - city: dubai
+  - slot_was_set:
+    - city: dubai
+  - action: action_ask_weather
+  - intent: ask_weather
+    entities:
+    - city: Rio de Janeiro
+  - slot_was_set:
+    - city: Rio de Janeiro
+  - action: action_ask_weather
+
+- story: interactive_story_1
+  steps:
+  - intent: ask_weather
+    entities:
+    - city: Nitra
+  - slot_was_set:
+    - city: Nitra
+  - action: action_ask_weather
+  - intent: ask_weather
+    entities:
+    - GPE: Bratislava
+    - city: Bratislava
+  - slot_was_set:
+    - city: Bratislava
+  - action: action_ask_weather
+  - intent: ask_weather
+    entities:
+    - GPE: Trnava
+  - action: action_ask_weather
+  - intent: ask_weather
+    entities:
+    - city: nitra
+  - slot_was_set:
+    - city: nitra
+  - action: action_ask_weather
+  - intent: greet
+    entities:
+    - TIME: afternoon
+  - action: utter_greet
+  - intent: ask_weather
+    entities:
+    - GPE: New Zeland
+    - city: New Zeland
+  - slot_was_set:
+    - city: New Zeland
+  - action: action_ask_weather
+  - intent: ask_weather
+    entities:
+    - GPE: San Marino
+    - city: San Marino
+  - slot_was_set:
+    - city: San Marino
+  - action: action_ask_weather
+  - intent: ask_weather
+    entities:
+    - GPE: Krakow
+    - city: Krakow
+  - slot_was_set:
+    - city: Krakow
+  - action: action_ask_weather

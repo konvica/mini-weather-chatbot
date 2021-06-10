@@ -5,20 +5,22 @@
 # https://rasa.com/docs/rasa/custom-actions
 
 
+import datetime
 # This is a simple example for a custom action which utters "Hello World!"
 import os
-from typing import Any, Text, Dict, List, TYPE_CHECKING
+from typing import Any, Text, Dict, List
+
 import requests
+from dotenv import load_dotenv
+from geopy.geocoders import Nominatim
 from rasa_sdk import Action, Tracker
 from rasa_sdk.executor import CollectingDispatcher
-from urllib.parse import urlencode
-from geopy.geocoders import Nominatim
-import datetime
-from dotenv import load_dotenv
+import logging
+
 load_dotenv()  # take environment variables from .env.
 
 url = "https://api.tomorrow.io/v4/timelines"
-weather_codes={
+weather_codes = {
     "1000": "Clear",
     "1001": "Cloudy",
     "1100": "Mostly Clear",
@@ -53,6 +55,8 @@ class ActionAskWeather(Action):
     def __init__(self):
         super().__init__()
         self.geocoder = Nominatim(user_agent="mini-weather-chatbot")
+        self.logger = logging.getLogger("rasa.action_server.action_logger")
+        self.logger.setLevel(logging.INFO)
 
     def name(self) -> Text:
         return "action_ask_weather"
@@ -62,11 +66,11 @@ class ActionAskWeather(Action):
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
 
         # print("tracker.get_slot",tracker.get_slot('city'))
-        print("tracker entities",tracker.latest_message.get("entities", []))
+        self.logger.info("tracker entities"+str(tracker.latest_message.get("entities", [])))
 
         city_spacy = next(tracker.get_latest_entity_values("GPE"), None)
-        city_diet = next(tracker.get_latest_entity_values("city"),None)
-        print(city_spacy,city_diet)
+        city_diet = next(tracker.get_latest_entity_values("city"), None)
+        self.logger.info([city_spacy, city_diet])
         if (city_spacy is None) and (city_diet is None):
             text = f"Unable to retrieve weather (unable to find city)"
         else:
@@ -75,9 +79,9 @@ class ActionAskWeather(Action):
             querystring: Dict[str, str] = {
                 'location': f'{location.latitude},{location.longitude}',
                 'apikey': os.environ["CLIMACELL_API_KEY"],  # type: ignore
-                'fields': ["cloudCover","temperature","humidity","windSpeed","weatherCode","particulateMatter10"],
+                'fields': ["cloudCover", "temperature", "humidity", "windSpeed", "weatherCode", "particulateMatter10"],
                 "units": "metric",
-                "timesteps":"1h",
+                "timesteps": "1h",
                 'startTime': datetime.datetime.now().replace(microsecond=0).isoformat() + 'Z',
                 'endTime': (datetime.datetime.now() + datetime.timedelta(hours=1)).replace(
                     microsecond=0).isoformat() + 'Z'
@@ -87,7 +91,7 @@ class ActionAskWeather(Action):
 
             response = requests.request("GET", url, headers=headers, params=querystring)
             # response = requests.get(url + urlencode(payload))
-            print(response.text)
+            self.logger.info(response.text)
             if (response.status_code == 200):
                 data: Dict = response.json()['data']
                 current: Dict = data['timelines'][0]['intervals'][0]['values']
@@ -111,8 +115,8 @@ class ActionAskWeather(Action):
                 Humidity: {humidity}
                 Wind: {wind_speed}
                 """.format(
-                    address=location.address,temperature=temperature,cloud_cover=cloud_cover,
-                    humidity=humidity,wind_speed=wind_speed,condition = weather_codes.get(str(conditions),"Unknown")
+                    address=location.address, temperature=temperature, cloud_cover=cloud_cover,
+                    humidity=humidity, wind_speed=wind_speed, condition=weather_codes.get(str(conditions), "Unknown")
                 )
 
             else:
