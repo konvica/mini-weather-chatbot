@@ -13,6 +13,7 @@ from typing import Any, Text, Dict, List
 import requests
 from dotenv import load_dotenv
 from geopy.geocoders import Nominatim
+from geotext import GeoText
 from rasa_sdk import Action, Tracker
 from rasa_sdk.executor import CollectingDispatcher
 import logging
@@ -70,11 +71,19 @@ class ActionAskWeather(Action):
 
         city_spacy = next(tracker.get_latest_entity_values("GPE"), None)
         city_diet = next(tracker.get_latest_entity_values("city"), None)
-        self.logger.info([city_spacy, city_diet])
-        if (city_spacy is None) and (city_diet is None):
+        place_geo = GeoText(tracker.latest_message.get("text",""))
+        city_geotext = place_geo.cities[0] if len(place_geo.cities)>0 else None
+        self.logger.info([city_spacy, city_diet,city_geotext])
+        if (city_spacy is None) and (city_diet is None) and (city_geotext is None):
             text = f"Unable to retrieve weather (unable to find city)"
         else:
-            city = city_spacy if city_spacy else city_diet
+            if city_spacy:
+                city = city_spacy
+            elif city_diet:
+                city = city_diet
+            else:
+                city = city_geotext
+
             location = self.geocoder.geocode(city)
             querystring: Dict[str, str] = {
                 'location': f'{location.latitude},{location.longitude}',

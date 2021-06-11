@@ -1,3 +1,4 @@
 requests~=2.25.1
 geopy~=2.1.0
 python-dotenv~=0.17.1
+geotext

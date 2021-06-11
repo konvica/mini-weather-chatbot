@@ -35,3 +35,4 @@ Now there should be running rasa API on port 5005. To test it out visit localhos
 - https://rasa.com/docs/rasa/
 - https://docs.tomorrow.io/reference/welcome
 - https://github.com/Super-Serious/bot
+- https://geotext.readthedocs.io/en/latest/
