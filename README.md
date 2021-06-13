@@ -28,7 +28,7 @@ Now there should be running rasa API on port 5005. To test it out visit localhos
 - Spacy entity and trained DIETclassifier are weak when detecting less known cities. Needs more data or better city entity recognition.
 
 
-## Used materials
+## References
 - https://medium.com/coinmonks/rasa-python-weather-chatbot-51fc218d346d
 - https://towardsdatascience.com/how-to-create-a-weather-chatbot-b8ef1b1d6703
 - https://chatbotslife.com/building-a-weather-chatbot-with-rasa-nlu-and-rasa-core-8a295f29c405
