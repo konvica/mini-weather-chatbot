@@ -2,6 +2,8 @@
 
 In this assignment I am tasked to create chatbot which will provide real weather report for given location.
 
+<img src="weather_chatbot.gif" alt="example" height="50%"/>
+
 ## Setup
 
 Needs private weather api (https://app.tomorrow.io/home) token defined in .env file. 
